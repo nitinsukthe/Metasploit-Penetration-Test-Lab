@@ -126,7 +126,7 @@ curl http://127.0.0.1:8080/shell.php
 ### Meterpreter Session
 
 ```bash
-meterpreter 
+meterpreter> 
 ```
 
 ---
