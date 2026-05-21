@@ -106,7 +106,7 @@ sudo adduser webuser --disabled-password --gecos ""
 
 ## Screenshot
 
-![Victim User Creation](screenshots/2-2.1.Create%20victim%20users%20and%20a%20simulated%20vulnerable%20web%20app.png)
+![Victim User Creation](screenshots/02_victim_user_creation.png)
 
 ---
 
