@@ -296,6 +296,6 @@ Unauthorized use of these techniques against systems without permission is illeg
 
 ## Nitin Sukthe
 
-Cybersecurity Enthusiast | Penetration Testing | Cloud Security | Red Team Learning
+Cybersecurity Enthusiast | Penetration Testing | Cloud Security | Red & Blue Team Learning
 
 ---
