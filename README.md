@@ -62,47 +62,6 @@ The objective of this project is to gain practical hands-on experience with offe
 
 ---
 
-# Project Structure
-
-```text
-Metasploit-Penetration-Test-Lab/
-│
-├── README.md
-│
-├── report/
-│   ├── penetration_testing_report.pdf
-│   └── findings.md
-│
-├── scripts/
-│   ├── fake_service.py
-│   └── setup_commands.txt
-│
-├── screenshots/
-│   ├── 01_environment_setup.png
-│   ├── 02_user_creation.png
-│   ├── 03_fake_service_running.png
-│   ├── 04_nmap_scan.png
-│   ├── 05_payload_generation.png
-│   ├── 06_msfconsole_handler.png
-│   ├── 07_php_server.png
-│   ├── 08_meterpreter_session.png
-│   ├── 09_post_exploitation.png
-│   ├── 10_flag_retrieval.png
-│   └── 11_cleanup.png
-│
-├── payloads/
-│   └── shell.php
-│
-├── notes/
-│   ├── methodology.md
-│   ├── remediation.md
-│   └── learning_notes.md
-│
-└── LICENSE
-```
-
----
-
 # Methodology
 
 The penetration testing process followed standard offensive security methodology:
@@ -322,7 +281,6 @@ uname -a
 | setup_commands.txt | Full Lab Setup Commands |
 | findings.md | Security Findings Report |
 | penetration_testing_report.pdf | Detailed Professional Report |
-| shell.php | Meterpreter PHP Payload |
 
 ---
 
@@ -339,11 +297,5 @@ Unauthorized use of these techniques against systems without permission is illeg
 ## Nitin Sukthe
 
 Cybersecurity Enthusiast | Penetration Testing | Cloud Security | Red Team Learning
-
----
-
-# License
-
-This project is licensed under the MIT License.
 
 ---
