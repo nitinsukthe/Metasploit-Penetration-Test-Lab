@@ -362,14 +362,6 @@ Stopped all services and removed simulated users.
 
 ---
 
-# Disclaimer
-
-This project was created strictly for educational and ethical cybersecurity training purposes inside a controlled lab environment.
-
-Unauthorized use of these techniques against systems without permission is illegal.
-
----
-
 # Author
 
 ## Nitin Sukthe
